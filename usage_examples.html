@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>XML TO JSON</title>
+    <meta charset="UTF-8"/>
+<style>
+    body {font-family:"Helvetica Neue", Arial, Helvetica, sans-serif;}
+
+pre 
+{
+    padding:5px;
+    margin:5px;
+    font-family:monospace;
+    border:1px solid black;
+}
+</style>
+</head>
+<body>
+<h1>xml2json Usage and UseCases</h1>
+<p>For my Google chrome extension TV WatchList, I needed to save TVRage.com's xml feed in indexedDB. Since it only takes json object, 
+I decided to make a small library which can convert xml to javascript. Existing solutions did not work for me due various reasons like
+node with url was giving me blank values, console.log would throw circular exeptions during debugging, and couple of other things i dont remember right now.
+This library is 100% javascript with no third party library dependency.
+Also This is only tested in chrome browser.
+Anyway lets start with some code</p>
+<h2>Sample XML - shows.xml</h2>
+<pre>
+&lt;?xml version="1.0" encoding="UTF-8" ?&gt;
+&lt;Results&gt;
+    &lt;show&gt;
+        &lt;name&gt;One Piece (JP)&lt;/name&gt;
+        &lt;link&gt;http://www.tvrage.com/One_Piece_JP&lt;/link&gt;
+        &lt;country&gt;JP&lt;/country&gt;
+        &lt;started&gt;Oct/20/1999&lt;/started&gt;
+        &lt;ended&gt;&lt;/ended&gt;
+        &lt;genres&gt;&lt;genre&gt;Anime&lt;/genre&gt;&lt;genre&gt;Action&lt;/genre&gt;&lt;genre&gt;Adventure&lt;/genre&gt;&lt;genre&gt;Comedy&lt;/genre&gt;&lt;genre&gt;Fantasy&lt;/genre&gt;&lt;/genres&gt;
+        &lt;network country="JP"&gt;Fuji TV&lt;/network&gt;
+        &lt;akas&gt;&lt;aka country="JP"&gt;&amp;#12527;&amp;#12531;&amp;#12500;&amp;#12540;&amp;#12473;&lt;/aka&gt;&lt;/akas&gt;
+    &lt;/show&gt;
+    &lt;show&gt;
+        &lt;name&gt;One Piece (US)&lt;/name&gt;
+        &lt;link&gt;http://www.tvrage.com/One_Piece_US&lt;/link&gt;
+        &lt;country&gt;AJ&lt;/country&gt;
+        &lt;started&gt;Sep/18/2004&lt;/started&gt;
+        &lt;ended&gt;Mar/15/2008&lt;/ended&gt;
+        &lt;genres&gt;&lt;genre&gt;Anime&lt;/genre&gt;&lt;genre&gt;Children&lt;/genre&gt;&lt;/genres&gt;
+        &lt;network country="US"&gt;Cartoon Network&lt;/network&gt;
+    &lt;/show&gt;
+&lt;/Results&gt;
+</pre>
+
+<h2>Usage:</h2>
+<pre>
+    var x2jObj = null;
+    $.get('shows.xml', function (xmlDocument) {
+        x2jObj = X2J.parseXml(xmlDocument); //X2J.parseXml(xmlDocument, '/');         
+        //x2jObj is called jNode   
+        console.log('x2jObj populated', x2jObj);
+        //...
+    });
+</pre>
+<p>Above code will read and parse xml into X2J object or jNode. Note: here I am just using jquery to read xml. (You can use your favourite method/framework to read xml).
+Under chrome open console (press F12 key), You should be able to see the object after 'x2jObj populated'. expand it to see in full details. its usefull in debugging.
+In subsequent examples i will work on x2jObj object.
+</p>
+
+<h2>UseCase: get value/attribute part 1</h2>
+<pre>
+    console.log('To get name "One Piece (US)"', x2jObj[0].Results[0].show[1].name[0].jValue);
+    console.log('Get aka for country="JP"', x2jObj[0].Results[0].show[0].akas[0].aka[0].jValue);
+    console.log('Get genre for Adventure', X2J.getValue(x2jObj[0].Results[0].show[0].genres[0].genre[2].jValue));
+
+    console.log('Get country US attribute for network ', x2jObj[0].Results[0].show[1].network[0].jAttr["country"]);
+</pre>
+
+<h2>UseCase: get value/attribute part 2</h2>
+<pre>
+    console.log('To get name "One Piece (US)"', X2J.getValue(x2jObj[0].Results[0].show[1], 'name', 0, ''));
+    console.log('Get aka for country="JP"', X2J.getValue(x2jObj[0].Results[0].show[0].akas[0], 'aka'));
+    console.log('Get genre for Adventure', X2J.getValue(x2jObj[0].Results[0].show[0].genres[0], 'genre',2));
+
+    console.log('Get country US attribute for network ', X2J.getAttr(x2jObj[0].Results[0].show[1].network[0], 'country'));
+</pre>
+<p>In part 2 getValue can be used when unsure of an element existance, so its a safe way to get value </p>
+
+<h2>UseCase: convert xml to json</h2>
+<pre>
+    console.log('X2J Object in json string:\n' + X2J.getJson(x2jObj));
+</pre>
+<p>You will notice, there are some extra fields(not part of original xml). Those are X2J meta data to preserve order, attributes, indexes etc  </p>
+
+<h2>UseCase: convert X2J object back to xml</h2>
+<pre>
+    console.log('X2J Object to xml string:\n' + X2J.getXml(x2jObj));
+</pre>
+<p>This should recreate the xml exactly as the original(with order) except for whitespaces</p>
+
+<h2>UseCase: print jNode to console</h2>
+<pre>
+    X2J.printJNode(x2jObject[0], function (name, value, attr, level) {
+        var strAttr = X2J.printJAttribute(attr);
+        console.log(spaces(level), name, typeof value === 'string' ? value : '', strAttr ? ', ' + strAttr : '');
+    });
+    function spaces(no) {
+            if (no === 0) {
+                return '';
+            }
+            var space = ' ';
+            for (var i = 0; i < no; i++) {
+                space += ' ';
+            }
+            return space;
+    }
+</pre>
+<p></p>
+
+<div id='main'></div>
+</body>
+</html>

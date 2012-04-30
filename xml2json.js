@@ -128,7 +128,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
         },
         printJNode: function (jNode, callback) {
-            if (!jNode) {
+            if (jNode === undefined) {
                 return;
             }
             var _printNode = function (jNode, level) {
@@ -148,17 +148,14 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
             };
             _printNode(jNode, 0);
         },
-        printJAttribute: function (jAttr, callback) {
-            if (!jAttr) {
-                return;
-            }
-            if (jAttr.jIndex !== undefined) {
+        printJAttribute: function (jAttr) {
+            var strArr = [];
+            if (jAttr.jIndex) {
                 for (var i = 0; i < jAttr.jIndex.length; i++) {
-                    callback(jAttr.jIndex[i], jAttr[jAttr.jIndex[i]]);
+                    strArr.push(jAttr.jIndex[i] + "=" + jAttr[jAttr.jIndex[i]]);
                 }
-            } else {
-                callback(null, null);
             }
+            return strArr.join(', ');
         },
         ///Safe way to get value, Use when not sure if a name is present. if not present return default_value.
         getValue: function (jNode, name, index, default_value) {//if index undefined then 0
@@ -202,7 +199,14 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
         },
         getAttr: function (jNode, name) {
-            if (!jNode || !jNode.jAttr || jNode.jAttr.length === undefined) {
+            var isObjectEmpty = function (obj) {
+                for (var name in obj) {
+                    return false;
+                }
+                return true;
+            };
+
+            if (jNode === undefined || jNode.jAttr === undefined || isObjectEmpty(jNode.jAttr)) {
                 return;
             }
             return jNode.jAttr[name];
