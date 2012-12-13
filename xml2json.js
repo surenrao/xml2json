@@ -3,20 +3,25 @@ Author: Surya Nyayapati
 http://www.nyayapati.com/surya
 
 The MIT License (MIT)
-Copyright (c) <2012> <surenrao>
+Copyright (c) <2012> <Surya Nyayapati>
 
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), 
+to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, 
+and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
 The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER 
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
 (function (window, undefined) {
     var X2J = {
+        VERSION: '1.1',
         //convert xml to x2j object
         //Rule: Get ordered list of javascript object for xml
-        parseXml: function (xmlDocument, xpathExpression) {
+        parseXml: function (xml, xpathExpression) {
             var isObjectEmpty = function (obj) {
                 for (var name in obj) {
                     return false;
@@ -31,35 +36,37 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
             //jValue = "node_value"
             //counter = 0..n (i.e. index for jNode)
             var GetChildNode = function (domElement) {
-                var obj = {};
+                var obj = {};  
+                obj['jName'] = domElement.nodeName;
+                obj['jAttr'] = GetAttributes(domElement.attributes);
+                
                 for (var i = 0; i < domElement.childNodes.length; i++) {
                     var node1 = domElement.childNodes[i];
-                    if (node1.nodeType === TEXT_NODE) {
+                    if (node1.nodeType === TEXT_NODE) {                        
                         if (node1.textContent.trim() !== "") {
-                            return node1.textContent;
-                        }
+                            obj['jValue'] = node1.textContent;                            
+                        }                        
                     }
-                    else {
+                    else 
+                    {
                         var tmp = {};
                         var childNode = GetChildNode(node1);
-                        for (key in childNode) {
+                        for (var key in childNode) {
                             if (typeof childNode === 'string')
                                 break;
-                            if (key !== 'jIndex' && key !== 'jValue' && key !== 'jAttr') {
+                            if (key !== 'jIndex' && key !== 'jValue' && key !== 'jAttr' && key !== 'jName') {
                                 tmp[key] = childNode[key];
                             }
                         }
-
-                        if (typeof childNode === 'string') {
-                            tmp['jName'] = node1.nodeName;
-                            tmp['jValue'] = childNode;
-                        } else if (typeof childNode === 'object' && isObjectEmpty(childNode)) {
-                            tmp['jName'] = node1.nodeName;
-                            tmp['jValue'] = '';
-                        }
-
-                        tmp['jAttr'] = GetAttributes(node1.attributes);
-
+                        
+                        if(!childNode['jIndex'])
+                        {
+                            tmp = childNode;
+                            if (!tmp.hasOwnProperty('jValue')) {
+                                tmp['jValue'] = '';
+                            }
+                        }    
+                        
                         if (obj['jIndex'] === undefined) {
                             obj['jIndex'] = [];
                         }
@@ -81,29 +88,43 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                         }
                     }
                 }
+                
                 return obj;
             };
 
             //Rule: attributes are unique list of name value pair inside a node.
             //Summary: This will return an object with jIndex property as an array and all the attributes as name value properties.
             //The number of attributes in a node will be equal to jIndex length. each element inside jIndex will be same as attribute name.
-            var GetAttributes = function (attrs) {
-                var obj = {};
+            var GetAttributes = function (attrs) {            
+                var obj = {};                
                 obj['jIndex'] = [];
+                if(!attrs) return obj;
+                
                 for (var i = attrs.length - 1; i >= 0; i--) {
                     obj[attrs[i].name] = attrs[i].value;
                     obj['jIndex'].push(attrs[i].name);
                 }
                 return obj;
             };
-            if (!xmlDocument) {
+            
+            if (!xml) {
                 return;
             }
             if (!xpathExpression) {
                 xpathExpression = '/';
             }
             //var xmlStr = (new XMLSerializer()).serializeToString(xml);
-            //var parser = new DOMParser();
+            var xmlDocument = null;
+            if(typeof(xml) ==='string')
+            {
+                var parser = new DOMParser();
+                xmlDocument = parser.parseFromString(xml, "text/xml");
+            }
+            else
+            {
+                xmlDocument = xml;
+            }
+            
             //var xmlDoc = parser.parseFromString(xmlStr, "text/xml");
             //var nodes = xmlDoc.evaluate("/", xmlDoc, null, XPathResult.ANY_TYPE, null);
             var xPathResult1 = xmlDocument.evaluate(xpathExpression, xmlDocument, null, XPathResult.ANY_TYPE, null);
@@ -112,7 +133,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
                 var dom_node1 = xPathResult1.iterateNext(); //returns node https://developer.mozilla.org/en/DOM/Node
                 var domArr = [];
-                while (dom_node1) {
+                while (dom_node1) {                                           
                     domArr.push(GetChildNode(dom_node1));
                     dom_node1 = xPathResult1.iterateNext();
                 }
@@ -124,8 +145,6 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
             } else {
                 console.log(xPathResult1);
             }
-
-
         },
         printJNode: function (jNode, callback) {
             if (jNode === undefined) {
@@ -160,6 +179,9 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
         ///Safe way to get value, Use when not sure if a name is present. if not present return default_value.
         getValue: function (jNode, name, index, default_value) {//if index undefined then 0
             //console.log(jNode, name, index,default_value);
+            if (jNode === undefined) {
+                return default_value;
+            }
             if (index === undefined) {
                 index = 0;
             }
@@ -170,7 +192,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                         //console.log('getValue 0');
                         return jNode[index].jValue; //tested
                     }
-                } 
+                }
                 else if (jNode[name] !== undefined) {//if not array but name obj is array then return indexOf
                     var node = jNode[name][index];
                     if (node !== undefined) {
@@ -196,6 +218,9 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
             }
 
             throw new RangeError("index must be positive!");
+
+        },
+        search: function (jNode, name, max_deep) {
 
         },
         getAttr: function (jNode, name) {
