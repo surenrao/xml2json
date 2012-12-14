@@ -51,10 +51,8 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OU
                     {
                         var tmp = {};
                         var childNode = GetChildNode(node1);
-                        for (var key in childNode) {
-                            if (typeof childNode === 'string')
-                                break;
-                            if (key !== 'jIndex' && key !== 'jValue' && key !== 'jAttr' && key !== 'jName') {
+                        for (var key in childNode) {                            
+                            if (key !== 'jIndex' && key !== 'jValue') {
                                 tmp[key] = childNode[key];
                             }
                         }
@@ -100,7 +98,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OU
                 obj['jIndex'] = [];
                 if(!attrs) return obj;
                 
-                for (var i = attrs.length - 1; i >= 0; i--) {
+                for (var i = 0; i < attrs.length; i++) { 
                     obj[attrs[i].name] = attrs[i].value;
                     obj['jIndex'].push(attrs[i].name);
                 }
@@ -179,10 +177,10 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OU
         ///Safe way to get value, Use when not sure if a name is present. if not present return default_value.
         getValue: function (jNode, name, index, default_value) {//if index undefined then 0
             //console.log(jNode, name, index,default_value);
-            if (jNode === undefined) {
+            if (jNode === undefined || jNode === null) {
                 return default_value;
             }
-            if (index === undefined) {
+            if (index === undefined || typeof(index) != 'number') {
                 index = 0;
             }
 

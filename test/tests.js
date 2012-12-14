@@ -27,17 +27,18 @@ test( "version test", function() {
         
 module( "parseXml" );
 
-test( "parseXml default test", function() {
+test( "default test", function() {    
     var x2jObjRoot = X2J.parseXml(xmlSample, '/');
     var x2jObjDefault = X2J.parseXml(xmlSample);
+    var x2jObjEmpty = X2J.parseXml('');
     ok( x2jObjRoot, "returned root object!" );
     ok( x2jObjDefault, "returned default object!" );
+    ok( !x2jObjEmpty, "returned empty!" );
     deepEqual( x2jObjRoot, x2jObjDefault ,'Root is equal to default' );
 });
 
-test( "parseXml testing default", function() {
-    var x2jObj = X2J.parseXml(xmlSample);
-    console.log(x2jObj);
+test( "testing sample default", function() {
+    var x2jObj = X2J.parseXml(xmlSample);    
     ok( x2jObj, "returned object!" );    
     equal( x2jObj.length , 1, "default has one obj in array" );
     equal( x2jObj[0].jName, "#document", "default has #document as jName" );
@@ -52,7 +53,7 @@ test( "parseXml testing default", function() {
     equal(x2jObj[0].Results[0].show[1].network[0].jAttr["country"],'US','Get country US attribute for network ');
 });
 
-test( "parseXml testing xpathExpression", function() {
+test( "testing sample xpathExpression", function() {
     var x2jObj = X2J.parseXml(xmlSample, '/Results/show');
     //console.log(x2jObj);
     ok( x2jObj, "returned object!" );    
@@ -73,20 +74,63 @@ test( "parseXml testing xpathExpression", function() {
     equal(x2jObj2[1].jAttr.jIndex[0],'country', 'Get 2nd network\'s name');    
 });
 
+test( "test for TVWatchList", function() {    
+    var naruto = document.getElementById("full_show_info-movie-14748").textContent;
+    var x2jObj = X2J.parseXml(naruto,'/Show');
+    equal( x2jObj.length , 1, "there is only 1 show element" );
+    var x2jShow = x2jObj[0];
+    console.log(x2jShow);    
+    ok( x2jShow, "returned x2jShow!" );    
+    equal(x2jShow.jName,'Show', 'Testing first element\'s jName');
+    equal(x2jShow.image[0].jValue,'http://images.tvrage.com/shows/15/14748.jpg', 'Testing url inside element');
+    equal(x2jShow.ended[0].jValue,'', 'checking empty element');    
+    equal(x2jShow.network[0].jAttr["country"],'JP','Testing attribute for element with text jValue');
+    equal(x2jShow.network[0].jValue,'TV Tokyo','Testing text for element with attribute');
+    
+    var expected_element = 'name totalseasons showid showlink started ended image origin_country status classification genres runtime network airtime airday timezone akas Episodelist'.split(' ');
+    var actual_element = []
+    for(var i=0;i<x2jShow.jIndex.length;i++)
+        actual_element.push(x2jShow.jIndex[i][0]);
+        
+    deepEqual(actual_element,expected_element,'Testing element order');
+    
+    var expected_element_value = 'Anime Action Adventure Comedy Drama Fantasy Mystery'.split(' ');
+    var actual_element_value = []
+    for(var i=0;i<x2jShow.genres[0].jIndex.length;i++)
+        actual_element_value.push( x2jShow.genres[0].genre[x2jShow.genres[0].jIndex[i][1]].jValue);
+        
+    deepEqual(actual_element_value,expected_element_value,'Testing element value order. genre');
+    
+    var expected_attr = 'country attr attr country'.split(' '); 
+    var actual_attr = [];
+    for(var i=0;i<x2jShow.akas[0].aka[0].jAttr.jIndex.length;i++)
+        actual_attr.push(x2jShow.akas[0].aka[0].jAttr.jIndex[i]);
+    
+    for(var i=0;i<x2jShow.akas[0].aka[1].jAttr.jIndex.length;i++)
+        actual_attr.push(x2jShow.akas[0].aka[1].jAttr.jIndex[i]);
+    
+    deepEqual(actual_attr,expected_attr,'Testing attribute order');   
+
+    equal(x2jShow.Episodelist[0].Season[1].jAttr['no'],'2','2nd Season number');
+    equal(x2jShow.Episodelist[0].Movie[0].episode.length,6,'Movie episodes');
+    equal(x2jShow.Episodelist[0].Special[0].episode.length,3,'Special episodes');
+});
+
 //raises(function() { _.reduceRight([], function(){}); }, TypeError, 'throws an error for empty arrays with no initial value');
 
 module( "getValue" );
+
+test( "default test", function() {        
+    var x2jObjSample = X2J.parseXml(xmlSample);    
+    
+    equal(X2J.getValue(x2jObjSample[0].Results[0].show[1], 'name', 0, ''),'One Piece (US)', 'To get name "One Piece (US)"');
+    var div = document.createElement('div');
+    div.innerHTML = '&#12527;&#12531;&#12500;&#12540;&#12473;';    
+    equal(X2J.getValue(x2jObjSample[0].Results[0].show[0].akas[0], 'aka'),div.firstChild.nodeValue, 'Get aka for country="JP"');
+    equal(X2J.getValue(x2jObjSample[0].Results[0].show[0].genres[0], 'genre',2),'Adventure', 'Get genre for Adventure');
+
+});
+
 module( "getAttr" );
 module( "getXml" );
 module( "getJson" );
-
-/*
-asyncTest( "parseXml test", function() {
-  expect( 1 );
- 
-  setTimeout(function() {
-    ok( true, "Passed and ready to resume!" );
-    start();
-  }, 1000);
-});
-*/
