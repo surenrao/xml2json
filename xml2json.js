@@ -218,8 +218,9 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OU
             throw new RangeError("index must be positive!");
 
         },
-        search: function (jNode, name, max_deep) {
-
+        search: function (jNode, name, options) {
+            //options is object with keys like 'max_deep', ...
+            //same as getValue, but returns array of obj(jName,jValue/jIndex,jAttr,[jNode]??)
         },
         getAttr: function (jNode, name) {
             var isObjectEmpty = function (obj) {
@@ -229,7 +230,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OU
                 return true;
             };
 
-            if (jNode === undefined || jNode.jAttr === undefined || isObjectEmpty(jNode.jAttr)) {
+            if (!jNode || !jNode.jAttr || isObjectEmpty(jNode.jAttr)) {
                 return;
             }
             return jNode.jAttr[name];
