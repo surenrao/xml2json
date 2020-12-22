@@ -21,6 +21,358 @@ var xmlSample = '<?xml version="1.0" encoding="UTF-8" ?>'+
         '    </show>'+
         '</Results>';
 
+//sample output
+// [
+// 	{
+// 		"jName": "#document",
+// 		"jAttr": {
+// 			"jIndex": []
+// 		},
+// 		"Results": [
+// 			{
+// 				"jName": "Results",
+// 				"jAttr": {
+// 					"jIndex": []
+// 				},
+// 				"show": [
+// 					{
+// 						"jName": "show",
+// 						"jAttr": {
+// 							"jIndex": []
+// 						},
+// 						"name": [
+// 							{
+// 								"jName": "name",
+// 								"jAttr": {
+// 									"jIndex": []
+// 								},
+// 								"jValue": "One Piece (JP)"
+// 							}
+// 						],
+// 						"jIndex": [
+// 							[
+// 								"name",
+// 								0
+// 							],
+// 							[
+// 								"link",
+// 								0
+// 							],
+// 							[
+// 								"country",
+// 								0
+// 							],
+// 							[
+// 								"started",
+// 								0
+// 							],
+// 							[
+// 								"ended",
+// 								0
+// 							],
+// 							[
+// 								"genres",
+// 								0
+// 							],
+// 							[
+// 								"network",
+// 								0
+// 							],
+// 							[
+// 								"akas",
+// 								0
+// 							]
+// 						],
+// 						"link": [
+// 							{
+// 								"jName": "link",
+// 								"jAttr": {
+// 									"jIndex": []
+// 								},
+// 								"jValue": "http://www.tvrage.com/One_Piece_JP"
+// 							}
+// 						],
+// 						"country": [
+// 							{
+// 								"jName": "country",
+// 								"jAttr": {
+// 									"jIndex": []
+// 								},
+// 								"jValue": "JP"
+// 							}
+// 						],
+// 						"started": [
+// 							{
+// 								"jName": "started",
+// 								"jAttr": {
+// 									"jIndex": []
+// 								},
+// 								"jValue": "Oct/20/1999"
+// 							}
+// 						],
+// 						"ended": [
+// 							{
+// 								"jName": "ended",
+// 								"jAttr": {
+// 									"jIndex": []
+// 								}
+// 							}
+// 						],
+// 						"genres": [
+// 							{
+// 								"jName": "genres",
+// 								"jAttr": {
+// 									"jIndex": []
+// 								},
+// 								"genre": [
+// 									{
+// 										"jName": "genre",
+// 										"jAttr": {
+// 											"jIndex": []
+// 										},
+// 										"jValue": "Anime"
+// 									},
+// 									{
+// 										"jName": "genre",
+// 										"jAttr": {
+// 											"jIndex": []
+// 										},
+// 										"jValue": "Action"
+// 									},
+// 									{
+// 										"jName": "genre",
+// 										"jAttr": {
+// 											"jIndex": []
+// 										},
+// 										"jValue": "Adventure"
+// 									},
+// 									{
+// 										"jName": "genre",
+// 										"jAttr": {
+// 											"jIndex": []
+// 										},
+// 										"jValue": "Comedy"
+// 									},
+// 									{
+// 										"jName": "genre",
+// 										"jAttr": {
+// 											"jIndex": []
+// 										},
+// 										"jValue": "Fantasy"
+// 									}
+// 								],
+// 								"jIndex": [
+// 									[
+// 										"genre",
+// 										0
+// 									],
+// 									[
+// 										"genre",
+// 										1
+// 									],
+// 									[
+// 										"genre",
+// 										2
+// 									],
+// 									[
+// 										"genre",
+// 										3
+// 									],
+// 									[
+// 										"genre",
+// 										4
+// 									]
+// 								]
+// 							}
+// 						],
+// 						"network": [
+// 							{
+// 								"jName": "network",
+// 								"jAttr": {
+// 									"jIndex": [
+// 										"country"
+// 									],
+// 									"country": "JP"
+// 								},
+// 								"jValue": "Fuji TV"
+// 							}
+// 						],
+// 						"akas": [
+// 							{
+// 								"jName": "akas",
+// 								"jAttr": {
+// 									"jIndex": []
+// 								},
+// 								"aka": [
+// 									{
+// 										"jName": "aka",
+// 										"jAttr": {
+// 											"jIndex": [
+// 												"country"
+// 											],
+// 											"country": "JP"
+// 										},
+// 										"jValue": "ワンピース"
+// 									}
+// 								],
+// 								"jIndex": [
+// 									[
+// 										"aka",
+// 										0
+// 									]
+// 								]
+// 							}
+// 						]
+// 					},
+// 					{
+// 						"jName": "show",
+// 						"jAttr": {
+// 							"jIndex": []
+// 						},
+// 						"name": [
+// 							{
+// 								"jName": "name",
+// 								"jAttr": {
+// 									"jIndex": []
+// 								},
+// 								"jValue": "One Piece (US)"
+// 							}
+// 						],
+// 						"jIndex": [
+// 							[
+// 								"name",
+// 								0
+// 							],
+// 							[
+// 								"link",
+// 								0
+// 							],
+// 							[
+// 								"country",
+// 								0
+// 							],
+// 							[
+// 								"started",
+// 								0
+// 							],
+// 							[
+// 								"ended",
+// 								0
+// 							],
+// 							[
+// 								"genres",
+// 								0
+// 							],
+// 							[
+// 								"network",
+// 								0
+// 							]
+// 						],
+// 						"link": [
+// 							{
+// 								"jName": "link",
+// 								"jAttr": {
+// 									"jIndex": []
+// 								},
+// 								"jValue": "http://www.tvrage.com/One_Piece_US"
+// 							}
+// 						],
+// 						"country": [
+// 							{
+// 								"jName": "country",
+// 								"jAttr": {
+// 									"jIndex": []
+// 								},
+// 								"jValue": "AJ"
+// 							}
+// 						],
+// 						"started": [
+// 							{
+// 								"jName": "started",
+// 								"jAttr": {
+// 									"jIndex": []
+// 								},
+// 								"jValue": "Sep/18/2004"
+// 							}
+// 						],
+// 						"ended": [
+// 							{
+// 								"jName": "ended",
+// 								"jAttr": {
+// 									"jIndex": []
+// 								},
+// 								"jValue": "Mar/15/2008"
+// 							}
+// 						],
+// 						"genres": [
+// 							{
+// 								"jName": "genres",
+// 								"jAttr": {
+// 									"jIndex": []
+// 								},
+// 								"genre": [
+// 									{
+// 										"jName": "genre",
+// 										"jAttr": {
+// 											"jIndex": []
+// 										},
+// 										"jValue": "Anime"
+// 									},
+// 									{
+// 										"jName": "genre",
+// 										"jAttr": {
+// 											"jIndex": []
+// 										},
+// 										"jValue": "Children"
+// 									}
+// 								],
+// 								"jIndex": [
+// 									[
+// 										"genre",
+// 										0
+// 									],
+// 									[
+// 										"genre",
+// 										1
+// 									]
+// 								]
+// 							}
+// 						],
+// 						"network": [
+// 							{
+// 								"jName": "network",
+// 								"jAttr": {
+// 									"jIndex": [
+// 										"country"
+// 									],
+// 									"country": "US"
+// 								},
+// 								"jValue": "Cartoon Network"
+// 							}
+// 						]
+// 					}
+// 				],
+// 				"jIndex": [
+// 					[
+// 						"show",
+// 						0
+// 					],
+// 					[
+// 						"show",
+// 						1
+// 					]
+// 				]
+// 			}
+// 		],
+// 		"jIndex": [
+// 			[
+// 				"Results",
+// 				0
+// 			]
+// 		]
+// 	}
+// ]
+
 test( "version test", function() {
   ok( X2J.VERSION == "1.1", "version is 1.1!" );
 });
@@ -39,6 +391,7 @@ test( "default test", function() {
 
 test( "testing sample default", function() {
     var x2jObj = X2J.parseXml(xmlSample);    
+    console.log(JSON.stringify(x2jObj));
     ok( x2jObj, "returned object!" );    
     equal( x2jObj.length , 1, "default has one obj in array" );
     equal( x2jObj[0].jName, "#document", "default has #document as jName" );
